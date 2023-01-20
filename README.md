@@ -30,6 +30,6 @@ Not a very fast and convenient way, but it is the only one (
 
 ## License
 
-[GPL-3.0 license](https://github.com/tompadz/JiraWorkLogApplication/blob/master/LICENSE.md)
+[GPL-3.0 license](https://github.com/tompadz/JiraWorkLogApplication/blob/master/LICENSE)
 
 
