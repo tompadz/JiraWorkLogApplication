@@ -19,11 +19,10 @@ class JiraIssuesApi {
     }
 
     suspend fun setNewTime(issueKey:String, time:Long): HttpResponse {
-        val params = "adjustEstimate=new&newEstimate=0m"
         val log = WorklogPostModel(time)
         val json = Gson().toJson(log)
         return Ktor.client.post {
-            url("https://partnerkin.atlassian.net/rest/api/3/issue/$issueKey/worklog?$params")
+            url("https://partnerkin.atlassian.net/rest/api/3/issue/$issueKey/worklog?")
             contentType(ContentType.Application.Json)
             setBody(json)
         }
