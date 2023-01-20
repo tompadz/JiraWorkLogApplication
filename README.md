@@ -15,7 +15,7 @@ this is the only way I can answer this quickly
 
 ### Windows and Linux
 
-Well, it's too easy. [Download](https://github.com/tompadz/VSCODesctopClient/releases) and install the latest app....enjoy!
+Well, it's too easy. [Download](https://github.com/tompadz/JiraWorkLogApplication/releases) and install the latest app....enjoy!
 
 ### MacOS
 
