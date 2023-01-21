@@ -12,7 +12,12 @@ data class IssueFields(
     val timetracking:IssueTimeTracking,
     val issuetype: IssueTypeModel?,
     val progress: IssueProgressModel,
-    val worklog: PagingWorkLogModel
+    val worklog: PagingWorkLogModel,
+    val status : IssueStatus,
+)
+
+data class IssueStatus(
+    val name : String,
 )
 
 data class PagingWorkLogModel(

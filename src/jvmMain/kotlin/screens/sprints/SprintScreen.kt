@@ -1,9 +1,10 @@
 package screens.sprints
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -50,12 +51,14 @@ fun SprintScreen(
             error = null
             getSprints()
         }
+
         is SprintScreenViewModel.SprintsState.Successes -> {
-            isLoading = false
             val data = (uiState.value as SprintScreenViewModel.SprintsState.Successes)
             sprints = data.sprints
             issues = data.issues
+            isLoading = false
         }
+
         is SprintScreenViewModel.SprintsState.Error -> {
             isLoading = false
             val throwable = (uiState.value as SprintScreenViewModel.SprintsState.Error).t
@@ -73,29 +76,32 @@ fun SprintScreen(
                 title = title,
                 navigator
             )
-            if (sprints != null) {
-                Row {
-                    SprintsListView(
-                        throwable = error,
-                        sprints = sprints !!,
-                        issues = issues,
-                        modifier = Modifier.weight(1f),
-                        viewModel = viewModel,
-                        onIssueClick = {
-                            issueId = it.id
-                        }
-                    )
-                    Divider(
-                        modifier = Modifier.fillMaxHeight().width(1.dp)
-                    )
-                    IssuePageView(
-                        issueId = issueId,
-                        modifier = Modifier.weight(1f),
-                        viewModel = viewModel,
-                    )
+            Row {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    if (sprints != null) {
+                        SprintsListView(
+                            throwable = error,
+                            sprints = sprints !!,
+                            issues = issues,
+                            modifier = Modifier,
+                            viewModel = viewModel,
+                            onIssueClick = { issueId = it.id }
+                        )
+                    }
+                    LoadingDialog(isLoading)
                 }
+                Divider(
+                    modifier = Modifier.fillMaxHeight().width(1.dp)
+                )
+                IssuePageView(
+                    issueId = issueId,
+                    modifier = Modifier.weight(1f),
+                    viewModel = viewModel,
+                )
             }
         }
-        LoadingDialog(isLoading)
     }
 }

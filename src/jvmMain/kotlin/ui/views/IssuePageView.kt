@@ -1,9 +1,11 @@
 package ui.views
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -12,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,6 +22,8 @@ import data.models.IssueModel
 import kotlinx.coroutines.launch
 import screens.sprints.SprintScreenViewModel
 import ui.components.AsyncImageXmlVector
+import ui.components.TagView
+import ui.components.TagViewStyle
 import ui.components.TimerButton
 import ui.dialogs.LoadingDialog
 
@@ -79,54 +82,60 @@ fun IssuePageView(
 
     Box(
         modifier = modifier
-            .defaultMinSize(400.dp)
     ) {
+
         if (issueId == null) {
             Box(
                 Modifier.fillMaxSize()
             ) {
-                IssueMessageView("Select issue")
+                MessageView("Select issue")
             }
         } else {
             if (issue != null && error == null) {
-                Column {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        IssueHeaderView(issue!!)
+                AnimatedVisibility(
+                    visible = ! isLoading,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Column {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            IssueHeaderView(issue!!)
+                            Spacer(Modifier.height(20.dp))
+                            IssueTimeTracker(issue!!)
+                            Spacer(Modifier.height(20.dp))
+                            TimerButton(
+                                seconds = viewModel.second,
+                                minutes = viewModel.minute,
+                                hours = viewModel.hours,
+                                isPlaying = viewModel.isPlaying,
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                onStart = {
+                                    viewModel.start()
+                                },
+                                onStop = {
+                                    coroutineScope.launch {
+                                        viewModel.stop(
+                                            onSuccesses = {
+                                                getIssue()
+                                            },
+                                            onError = {
+                                                println("error")
+                                            }
+                                        )
+                                    }
+                                },
+                            )
+                        }
                         Spacer(Modifier.height(20.dp))
-                        IssueTimeTracker(issue!!)
+                        Divider()
                         Spacer(Modifier.height(20.dp))
-                        TimerButton(
-                            seconds = viewModel.second,
-                            minutes = viewModel.minute,
-                            hours = viewModel.hours,
-                            isPlaying = viewModel.isPlaying,
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onStart = {
-                                viewModel.start()
-                            },
-                            onStop = {
-                                coroutineScope.launch {
-                                    viewModel.stop(
-                                        onSuccesses = {
-                                            getIssue()
-                                        },
-                                        onError = {
-                                            println("error")
-                                        }
-                                    )
-                                }
-                            },
-                        )
+                        IssueLogHistory(issue!!)
                     }
-                    Spacer(Modifier.height(20.dp))
-                    Divider()
-                    Spacer(Modifier.height(20.dp))
-                    IssueLogHistory(issue!!)
                 }
             } else if (error != null) {
-                IssueMessageView("Error")
+                MessageView("Error")
             }
         }
         LoadingDialog(isLoading)
@@ -149,6 +158,13 @@ fun IssueHeaderView(
         Text(
             text = issue.key,
             modifier = Modifier.alpha(0.7f)
+        )
+        Spacer(Modifier.weight(1f))
+        TagView(
+            key = issue.fields.status.name,
+            style = TagViewStyle.SMALL,
+            color = Colors.tagActive,
+            textColor = Color.White
         )
     }
     Spacer(Modifier.height(10.dp))
@@ -228,12 +244,12 @@ fun IssueLogHistory(
                 }
                 if (!isLastPage) {
                     item {
-                        IssueMessageView("And more")
+                        MessageView("And more")
                     }
                 }
             }
         } else {
-            IssueMessageView("Empty")
+            MessageView("Empty")
         }
     }
 }

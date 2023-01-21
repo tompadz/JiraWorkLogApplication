@@ -9,12 +9,12 @@ import io.ktor.http.*
 
 class JiraIssuesApi {
     suspend fun getAllIssues(boardId:Int, sprintId:Int, userId:String): HttpResponse {
-        val fields = "timetracking,summary,issuetype,progress,worklog"
+        val fields = "timetracking,summary,issuetype,progress,worklog,status"
         return Ktor.client.get("rest/agile/1.0/board/$boardId/sprint/$sprintId/issue?fields=$fields&jql=assignee=$userId")
     }
 
     suspend fun getIssues(issueId:String): HttpResponse {
-        val fields = "timetracking,summary,issuetype,progress,worklog"
+        val fields = "timetracking,summary,issuetype,progress,worklog,status"
         return Ktor.client.get("rest/api/3/issue/$issueId?fields=$fields")
     }
 
